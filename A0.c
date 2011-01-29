@@ -21,12 +21,17 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define QUIT (-1)
 #define INVALID (-2)
 
 #define STR_LEN (30)
+
+   // these need to be kept in unison
+   // MAX_VAL = 2^(BIN_LEN)
 #define BIN_LEN (11)
+#define MAX_VAL (2048)
 
 
 // forward declarations
@@ -66,7 +71,8 @@ int main( int argc, char** argv )
    // {INVALID,QUIT}
 int get_input()
 {
-   printf( "Enter an integer between 0 and 2047: " );
+   printf( "Enter an integer between 0 and %d: ",
+           MAX_VAL - 1 );
    
    char line[ STR_LEN ] = {0};
    fgets( line, STR_LEN, stdin );
@@ -101,7 +107,7 @@ int convert_input( char* input )
    int status = sscanf( token, "%d", &val );
 
    if( status == 1 )
-      return ( 0 <= val && val < 2048 ? val : INVALID );
+      return ( 0 <= val && val < MAX_VAL ? val : INVALID );
    else if( !strcmp( token, "quit" ) )
       return QUIT;
    else
@@ -115,7 +121,7 @@ void to_binary( int dec_val )
 
    char bin_val[ BIN_LEN ] = {0};
    
-   int mask = 1 << 10;
+   int mask = 1 << (BIN_LEN - 1);
    int index = 0;
    while( mask > 0 )
    {
