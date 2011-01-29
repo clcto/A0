@@ -26,52 +26,49 @@
 #define INVALID (-2)
 
 #define STR_LEN (30)
-#define BIN_LEN (12)
+#define BIN_LEN (11)
 
-   // forward declarations
+
+// forward declarations
 
    // checks the string and returns the integer value
    // if the string represents an integer between 0-2047
    // otherwise it returns INVALID or QUIT
 int convert_input( char* );
 
-   // gets the input from stdin and stores it in the output
-   // string. A line longer than (STR_LEN - 1) will be
-   // truncated and the rest of the line will be thrown out
-void get_input( char* );
+   // returns the value of the first token on an 
+   // input line from stdin, or the status information
+   // {INVALID,QUIT}
+int get_input();
 
    // converts the integer to binary and prints it
 void to_binary( int );
 
 int main( int argc, char** argv )
 {
-   char input[ STR_LEN ] = {0};
+   int input_val = get_input();
 
-   get_input( input );
-   int input_val = convert_input( input );
    while( input_val != QUIT )
    {
       if( input_val == INVALID )
-         printf( "Invalid input.\n" );
+         printf( "  !! Invalid input.\n" );
       else
          to_binary( input_val ); 
 
-      get_input( input );
+      input_val = get_input();
    }
-
-
 
    return 0;
 }
 
-
-   // gets the input from stdin and stores it in the output
-   // string. A line longer than (STR_LEN - 1) will be
-   // truncated and the rest of the line will be thrown out
-void get_input( char* line )
+   // returns the value of the first token on an 
+   // input line from stdin, or the status information
+   // {INVALID,QUIT}
+int get_input()
 {
    printf( "Enter an integer between 0 and 2047: " );
    
+   char line[ STR_LEN ] = {0};
    fgets( line, STR_LEN, stdin );
    
    int len = strlen( line );
@@ -86,6 +83,8 @@ void get_input( char* line )
       while( x != '\n' && x != EOF )
          x = getchar();
    }
+   
+   return convert_input( line );
 }
 
    // checks the string and returns the integer value
@@ -112,8 +111,25 @@ int convert_input( char* input )
    // converts the integer to binary and prints it
 void to_binary( int dec_val )
 {
+   int cur_val = dec_val;
+
    char bin_val[ BIN_LEN ] = {0};
    
    int mask = 1 << 10;
-   printf( "%d\n", mask );
+   int index = 0;
+   while( mask > 0 )
+   {
+      if( cur_val >= mask )
+      {
+         bin_val[ index ] = '1';
+         cur_val -= mask;
+      }
+      else
+         bin_val[ index ] = '0';
+
+      ++index;
+      mask >>= 1;
+   }
+
+   printf( "   %d = 0b%s\n", dec_val, bin_val );
 }
